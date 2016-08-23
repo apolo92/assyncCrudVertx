@@ -21,9 +21,6 @@ public class VerticleCrudRest extends AbstractVerticle {
     public void start() throws Exception {
         Router router = Router.router(vertx);
 
-        //TODO MongoVerticle deploy and manage DB
-//        vertx.deployVerticle("com.vertx.crud.infrastructure.repositories.MongoVerticle");
-
         ConfigMongoDB.getInstance().initMongoClient(Vertx.vertx());
 
         HttpServer server = vertx.createHttpServer();
