@@ -1,5 +1,7 @@
 package com.vertx.crud.infrastructure.services;
 
+import com.vertx.crud.domain.entities.register.ServiceRegister;
+import com.vertx.crud.infrastructure.repositories.controller.MongoController;
 import com.vertx.crud.infrastructure.repositories.datasource.ConfigMongoDB;
 import com.vertx.crud.infrastructure.services.controller.ServiceController;
 import io.vertx.core.AbstractVerticle;
@@ -24,6 +26,10 @@ public class VerticleCrudRest extends AbstractVerticle {
 
         ConfigMongoDB.getInstance().initMongoClient(Vertx.vertx());
 
+        HttpServer server = vertx.createHttpServer();
+
+        ServiceRegister.registerService();
+
         router.route().handler(CorsHandler.create("*")
                 .allowedMethod(HttpMethod.GET)
                 .allowedMethod(HttpMethod.POST)
@@ -34,19 +40,30 @@ public class VerticleCrudRest extends AbstractVerticle {
 
         router.route().handler(BodyHandler.create());
 
-        router.post("/crud/:entity").handler(ServiceController::insert);
+        router.get("/crud/:entity").handler(ServiceController::verifyEntityExists);
+        router.get("/crud/:entity").handler(MongoController::readAll);
 
-        router.get("/crud/:entity").handler(ServiceController::readAll);
+        router.post("/crud/:entity").handler(ServiceController::verifyEntityExists);
+//        router.post("/crud/:entity").handler(ServiceController::verifyEntity);
+        router.post("/crud/:entity").handler(MongoController::insert);
 
-        router.get("/crud/:entity/:id").handler(ServiceController::readOne);
+        router.get("/crud/:entity/:id").handler(ServiceController::verifyEntityExists);
+        router.get("/crud/:entity/:id").handler(MongoController::readOne);
 
-        router.put("/crud/:entity/:id").handler(ServiceController::update);
+        router.delete("/crud/:entity/:id").handler(ServiceController::verifyEntityExists);
+        router.delete("/crud/:entity/:id").handler(MongoController::delete);
 
-        router.delete("/crud/:entity/:id").handler(ServiceController::delete);
+        router.put("/crud/:entity/:id").handler(ServiceController::verifyEntityExists);
+//        router.put("/crud/:entity/:id").handler(ServiceController::verifyEntity);
+        router.put("/crud/:entity/:id").handler(MongoController::update);
 
-        HttpServer server = vertx.createHttpServer();
+        router.get("/schema/:entity").handler(ServiceController::verifyEntityExists);
+//        router.get("/schema/:entity").handler(MongoController::schema);
+
+        router.get("/discovery/entities/").handler(ServiceController::discovery);
+
         server.requestHandler(router::accept).listen(8081);
-        System.out.println("Start Server! 8081");
+        System.out.println("Start Server!");
 
     }
 
