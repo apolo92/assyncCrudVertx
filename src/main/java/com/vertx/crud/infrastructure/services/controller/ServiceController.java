@@ -1,7 +1,12 @@
 package com.vertx.crud.infrastructure.services.controller;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.vertx.crud.domain.entities.Entity;
 import com.vertx.crud.domain.entities.register.ServiceRegister;
 import com.vertx.crud.domain.exception.NotFoundServiceException;
+import com.vertx.crud.domain.issues.Issue;
+import com.vertx.crud.domain.validations.BaseValidator;
+import com.vertx.crud.domain.validations.EntityValidator;
 import com.vertx.crud.infrastructure.services.constants.HttpStatusCode;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
@@ -33,5 +38,24 @@ public class ServiceController {
         List<String> listEntities = ServiceRegister.getEntityRegisterList();
 
         routingContext.response().end(Json.encode(listEntities));
+    }
+
+    public static void verifyEntity(RoutingContext routingContext) {
+
+        Entity entityToInsert = (Entity) Json.decodeValue(routingContext.getBodyAsString(), entityClass);
+
+        BaseValidator validator = new EntityValidator();
+
+        HttpServerResponse response = routingContext.response();
+        List<Issue> issues = validator.validate(entityToInsert);
+        if (!issues.isEmpty()) {
+            response.setStatusCode(HttpStatusCode.ERROR_BAD_REQUEST
+                    .getStatusCode());
+            Json.prettyMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            response.putHeader("content-type",
+                    "application/json; charset=utf-8").end(
+                    Json.encodePrettily(issues));
+        } else
+            routingContext.next();
     }
 }

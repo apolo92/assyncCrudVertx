@@ -27,8 +27,8 @@ public class ConfigMongoDB {
     }
 
     private JsonObject getConfig() {
-        config.put("host", "localhost");
-        config.put("port", 32768);
+        config.put("host", "192.168.99.100");
+        config.put("port", 32774);
         return config;
     }
 

@@ -41,7 +41,7 @@ public class VerticleCrudRest extends AbstractVerticle {
         router.get("/crud/:entity").handler(MongoController::readAll);
 
         router.post("/crud/:entity").handler(ServiceController::verifyEntityExists);
-//        router.post("/crud/:entity").handler(ServiceController::verifyEntity);
+        router.post("/crud/:entity").handler(ServiceController::verifyEntity);
         router.post("/crud/:entity").handler(MongoController::insert);
 
         router.get("/crud/:entity/:id").handler(ServiceController::verifyEntityExists);
@@ -51,7 +51,7 @@ public class VerticleCrudRest extends AbstractVerticle {
         router.delete("/crud/:entity/:id").handler(MongoController::delete);
 
         router.put("/crud/:entity/:id").handler(ServiceController::verifyEntityExists);
-//        router.put("/crud/:entity/:id").handler(ServiceController::verifyEntity);
+        router.put("/crud/:entity/:id").handler(ServiceController::verifyEntity);
         router.put("/crud/:entity/:id").handler(MongoController::update);
 
         router.get("/schema/:entity").handler(ServiceController::verifyEntityExists);

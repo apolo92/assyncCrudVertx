@@ -1,10 +1,13 @@
 package com.vertx.crud.domain.entities;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by apolo on 18/08/2016.
  */
 public class Entity {
 
+    @NotNull
     private Long id;
 
     private String name;
